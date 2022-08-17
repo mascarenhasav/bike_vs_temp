@@ -15,6 +15,11 @@ from pathlib import Path
 import datetime
 import calendar
 from scipy.stats import linregress
+plt.style.use('dark_background')
+plt.rcParams['axes.facecolor'] = 'cornsilk'
+plt.rcParams['savefig.facecolor'] = 'black'
+plt.rcParams['text.color'] = 'black'
+
 
 def findDay(test):
     born = datetime.datetime.strptime(test, '%Y-%m-%d').weekday()
@@ -26,9 +31,9 @@ from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 pd.set_option('mode.chained_assignment', None)
 
-if(os.path.isdir("./barGraphs") == False):os.mkdir("./barGraphs")
-if(os.path.isdir("./lineGraphs") == False):os.mkdir("./lineGraphs")
-if(os.path.isdir("./scatterGraphs") == False):os.mkdir("./scatterGraphs")
+if(os.path.isdir("../graphs/barGraphs") == False):os.mkdir("../graphs/barGraphs")
+if(os.path.isdir("../graphs/lineGraphs") == False):os.mkdir("../graphs/lineGraphs")
+if(os.path.isdir("../graphs/scatterGraphs") == False):os.mkdir("../graphs/scatterGraphs")
 
 print ("*************************************************************")
 print ("Mascarenhas Alexandre")
@@ -50,11 +55,11 @@ importing datasets
 '''
 
 
-naruto = pd.read_csv("faria-lima.csv", delimiter = ',', usecols=['Date', 'Pinheiros']) #import dataset with number of cyclists
+naruto = pd.read_csv("../data/faria-lima.csv", delimiter = ',', usecols=['Date', 'Pinheiros']) #import dataset with number of cyclists
 bikers = naruto[:-834] #01 jan 2020
 #print (bikers)
 
-luffy = pd.read_csv("temperature-sp.csv", delimiter = '\t', usecols=['Data Medicao','TEMPERATURA MEDIA COMPENSADA, DIARIA(°C)'], parse_dates=['Data Medicao']) #import dataset with temperature
+luffy = pd.read_csv("../data/temperature-sp.csv", delimiter = '\t', usecols=['Data Medicao','TEMPERATURA MEDIA COMPENSADA, DIARIA(°C)'], parse_dates=['Data Medicao']) #import dataset with temperature
 luffy.set_index('Data Medicao', inplace = True)
 luffy = luffy.rename(columns={"TEMPERATURA MEDIA COMPENSADA, DIARIA(°C)": "Temperature"})
 luffy = luffy.rename(columns={"Data Medicao": "Date"})
@@ -168,28 +173,32 @@ if dayWeek != 0:
 
 
 	fig1, ax1 = plt.subplots()
+	plt.grid(color='gray', linestyle='dashed', linewidth=.5)
 	plt.grid(True)
-	ax1.set_title(f'Daily Temperature and Daily Number of Cyclists\nevery {dayWeekStr[dayWeek]} between {startDate} and {endDate}\nSample size (n): {N}   Correlation coefficient (r): {r:.3f}   Confidence Interval (95%): [{rL:.3f}:{rU:.3f}]')
-	ax1.set_xlabel("Temperature (C)")
-	ax1.set_ylabel("Number of Cyclists (N)")
+	ax1.set_title(f'Daily Temperature and Daily Number of Cyclists\nevery {dayWeekStr[dayWeek]} between {startDate} and {endDate}\nSample size (n): {N}   Correlation coefficient (r): {r:.3f}   Confidence Interval (95%): [{rL:.3f}:{rU:.3f}]', color='cornsilk')
+	ax1.set_xlabel("Temperature (C)", color='cornsilk')
+	ax1.set_ylabel("Number of Cyclists (N)", color='cornsilk')
 	ax1.tick_params(axis='x', labelrotation=45)
-	ax1.scatter(newData['Temperature'].values, newData['Pinheiros'].values, label="Number of Cyclists towards Pinheiros (N)")
+	ax1.scatter(newData['Temperature'].values, newData['Pinheiros'].values, label="Number of Cyclists towards Pinheiros (N)", c='crimson')
 	ax1.plot(x, linregress(x, y)[1] + linregress(x, y)[0]*x, "g" )
-	fig1.savefig(f'./scatterGraphs/Bikers-Temp_x_Date-'+dayWeekStr[dayWeek]+'-'+startDate+'-'+endDate+'-scatter.png', format='png')
+	fig1.savefig(f'../graphs/scatterGraphs/Bikers-Temp_x_Date-'+dayWeekStr[dayWeek]+'-'+startDate+'-'+endDate+'-scatter.png', format='png')
 
 
 	fig2, ax2 = plt.subplots()
 	plt.grid(True)
+	plt.grid(color='gray', linestyle='dashed', linewidth=.5)
 	ax2.set_title(f'Daily Temperature and Daily Number of Cyclists\nevery {dayWeekStr[dayWeek]} between {startDate} and {endDate}\nSample size (n): {N}   Correlation coefficient (r): {r:.3f}   Confidence Interval (95%): [{rL:.3f}:{rU:.3f}]')
 	ax2.set_xlabel("Temperature (C)")
 	ax2.set_ylabel("Number of Cyclists (N)")
 	ax2.tick_params(axis='x', labelrotation=45)
-	ax2.bar(newData['Temperature'].values, newData['Pinheiros'].values, label="Number of Cyclists towards Pinheiros (N)")
-	fig2.savefig(f'./barGraphs/Bikers-Temp_x_Date-'+dayWeekStr[dayWeek]+'-'+startDate+'-'+endDate+'-bar.png', format='png')
+	ax2.bar(newData['Temperature'].values, newData['Pinheiros'].values, label="Number of Cyclists towards Pinheiros (N)", color='crimson')
+	ax2.plot(x, linregress(x, y)[1] + linregress(x, y)[0]*x, "g" )
+	fig2.savefig(f'../graphs/barGraphs/Bikers-Temp_x_Date-'+dayWeekStr[dayWeek]+'-'+startDate+'-'+endDate+'-bar.png', format='png')
 
 
 	fig3, ax3 = plt.subplots()
 	plt.grid(True)
+	plt.grid(color='gray', linestyle='dashed', linewidth=.5)
 	ax3.set_title(f'Daily Temperature and Daily Number of Cyclists\nevery {dayWeekStr[dayWeek]} between {startDate} and {endDate}\nSample size (n): {N}   Correlation coefficient (r): {r:.3f}   Confidence Interval (95%): [{rL:.3f}:{rU:.3f}]')
 	ax3.set_xlabel("Date")
 	ax3.set_ylabel("Number of Cyclists (N)")
@@ -198,14 +207,14 @@ if dayWeek != 0:
 	plot1 = ax3.plot(newData.index, newData['Pinheiros'].values, 'g', label="Number of Cyclists towards Pinheiros (N)")
 	ax4 = ax3.twinx()
 	ax4.set_ylabel("Temperature (C)")
-	plot2 = ax4.plot(newData.index, newData['Temperature'].values, 'r', label="Average Temperature (C)")
+	plot2 = ax4.plot(newData.index, newData['Temperature'].values, 'crimson', label="Average Temperature (C)")
 	lns = plot1 + plot2
 	labels = [l.get_label() for l in lns]
 	plt.legend(lns, labels, loc=0)
 	date_form = DateFormatter("%b %y")
 	ax3.xaxis.set_major_formatter(date_form)
 	ax3.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
-	fig3.savefig(f'./lineGraphs/Bikers-Temp_x_Date-'+dayWeekStr[dayWeek]+'-'+startDate+'-'+endDate+'-line.png', format='png')
+	fig3.savefig(f'../graphs/lineGraphs/Bikers-Temp_x_Date-'+dayWeekStr[dayWeek]+'-'+startDate+'-'+endDate+'-line.png', format='png')
 	plt.show()
 
 else:
@@ -237,43 +246,47 @@ else:
 
 	fig1, ax1 = plt.subplots()
 	plt.grid(True)
-	ax1.set_title(f'Daily Temperature and Daily Number of Cyclists\neveryday between {startDate} and {endDate}\nSample size (n): {N}   Correlation coefficient (r): {r:.3f}   Confidence Interval (95%): [{rL:.3f}:{rU:.3f}]')
-	ax1.set_xlabel("Temperature (C)")
-	ax1.set_ylabel("Number of Cyclists (N)")
+	plt.grid(color='gray', linestyle='dashed', linewidth=.5)
+	ax1.set_title(f'Daily Temperature and Daily Number of Cyclists\neveryday between {startDate} and {endDate}\nSample size (n): {N}   Correlation coefficient (r): {r:.3f}   Confidence Interval (95%): [{rL:.3f}:{rU:.3f}]', color='cornsilk')
+	ax1.set_xlabel("Temperature (C)", color='cornsilk')
+	ax1.set_ylabel("Number of Cyclists (N)", color='cornsilk')
 	ax1.tick_params(axis='x', labelrotation=45)
-	ax1.scatter(data['Temperature'].values, data['Pinheiros'].values, label="Number of Cyclists towards Pinheiros (N)")
+	ax1.scatter(data['Temperature'].values, data['Pinheiros'].values, label="Number of Cyclists towards Pinheiros (N)", c='crimson')
 	ax1.plot(x, linregress(x, y)[1] + linregress(x, y)[0]*x, "g" )
-	fig1.savefig(f'./scatterGraphs/Bikers-Temp_x_Date-Everyday-'+startDate+'-'+endDate+'-scatter.png', format='png')
+	fig1.savefig(f'../graphs/scatterGraphs/Bikers-Temp_x_Date-Everyday-'+startDate+'-'+endDate+'-scatter.png', format='png')
 
 
 	fig2, ax2 = plt.subplots()
 	plt.grid(True)
-	ax2.set_title(f'Daily Temperature and Daily Number of Cyclists\neveryday between {startDate} and {endDate}\nSample size (n): {N}   Correlation coefficient (r): {r:.3f}   Confidence Interval (95%): [{rL:.3f}:{rU:.3f}]')
-	ax2.set_xlabel("Temperature (C)")
-	ax2.set_ylabel("Number of Cyclists (N)")
+	plt.grid(color='gray', linestyle='dashed', linewidth=.5)
+	ax2.set_title(f'Daily Temperature and Daily Number of Cyclists\neveryday between {startDate} and {endDate}\nSample size (n): {N}   Correlation coefficient (r): {r:.3f}   Confidence Interval (95%): [{rL:.3f}:{rU:.3f}]', color='cornsilk')
+	ax2.set_xlabel("Temperature (C)", color='cornsilk')
+	ax2.set_ylabel("Number of Cyclists (N)", color='cornsilk')
 	ax2.tick_params(axis='x', labelrotation=45)
-	ax2.bar(data['Temperature'].values, data['Pinheiros'].values, label="Number of Cyclists towards Pinheiros (N)")
-	fig2.savefig(f'./barGraphs/Bikers-Temp_x_Date-Everyday-'+startDate+'-'+endDate+'-bar.png', format='png')
+	ax2.bar(data['Temperature'].values, data['Pinheiros'].values, label="Number of Cyclists towards Pinheiros (N)", color='crimson')
+	ax2.plot(x, linregress(x, y)[1] + linregress(x, y)[0]*x, "g" )
+	fig2.savefig(f'../graphs/barGraphs/Bikers-Temp_x_Date-Everyday-'+startDate+'-'+endDate+'-bar.png', format='png')
 
 
 	fig3, ax3 = plt.subplots()
 	plt.grid(True)
-	ax3.set_title(f'Daily Temperature and Daily Number of Cyclists\neveryday between {startDate} and {endDate}\nSample size (n): {N}   Correlation coefficient (r): {r:.3f}   Confidence Interval (95%): [{rL:.3f}:{rU:.3f}]')
-	ax3.set_xlabel("Date")
-	ax3.set_ylabel("Number of Cyclists (N)")
+	plt.grid(color='gray', linestyle='dashed', linewidth=.5)
+	ax3.set_title(f'Daily Temperature and Daily Number of Cyclists\neveryday between {startDate} and {endDate}\nSample size (n): {N}   Correlation coefficient (r): {r:.3f}   Confidence Interval (95%): [{rL:.3f}:{rU:.3f}]', color='cornsilk')
+	ax3.set_xlabel("Date", color='cornsilk')
+	ax3.set_ylabel("Number of Cyclists (N)", color='cornsilk')
 	ax3.tick_params(axis='x', labelrotation=45)
 	ax3.set_xlim(data.index[0], data.index[-1])
 	plot1 = ax3.plot(data.index, data['Pinheiros'].values, 'g', label="Number of Cyclists towards Pinheiros (N)")
 	ax4 = ax3.twinx()
 	ax4.set_ylabel("Temperature (C)")
-	plot2 = ax4.plot(data.index, data['Temperature'].values, 'r', label="Average Temperature (C)")
+	plot2 = ax4.plot(data.index, data['Temperature'].values, 'crimson', label="Average Temperature (C)")
 	lns = plot1 + plot2
 	labels = [l.get_label() for l in lns]
 	plt.legend(lns, labels, loc=0)
 	date_form = DateFormatter("%b %y")
 	ax3.xaxis.set_major_formatter(date_form)
 	ax3.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
-	fig3.savefig(f'./lineGraphs/Bikers-Temp_x_Date-Everyday-'+startDate+'-'+endDate+'-line.png', format='png')
+	fig3.savefig(f'../graphs/lineGraphs/Bikers-Temp_x_Date-Everyday-'+startDate+'-'+endDate+'-line.png', format='png')
 	plt.show()
 
 print ("\n*************************************")
